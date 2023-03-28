@@ -30,7 +30,9 @@ p {
 }
 
 .container {
-  max-width: 1200px;
+  display: block;
+  margin: 0 auto;
+  max-width: 95%;
 }
 
 .header {

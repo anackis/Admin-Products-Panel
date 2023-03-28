@@ -1,0 +1,19 @@
+
+
+.product-list-item {
+  border: 2px solid #000;
+  margin: 15px;
+  text-align: center;
+  position: relative;
+  min-width: 250px;
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  &__checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+}
