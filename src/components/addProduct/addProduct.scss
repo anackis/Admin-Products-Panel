@@ -3,8 +3,62 @@
 .product-add-section {
   height: 100vh;
   position: relative;
+  font-size: 20px;
+  font-weight: 500;
 }
 
 .product-list {
   padding-bottom: 100px;
+}
+
+.product_form {
+  margin-top: 50px;
+  margin-left: 10px;
+  input {
+    padding-left: 5px;
+    margin: 15px 15px;
+    font-size: 20px;
+    font-weight: 500;
+    border: 2px solid #000;
+    border-radius: 4px;
+  }
+  input::placeholder {
+    padding-left: 5px;
+    margin: 15px 15px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  label {
+    margin: 15px 15px;
+  }
+  select {
+    font-size: 20px;
+    font-weight: 500;
+    border: 2px solid #000;
+    border-radius: 4px;
+    margin-left: 10px;
+  }
+  &__wrapper {
+    display: flex;
+  }
+  &__labels {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+  &__inputs {
+    display: flex;
+    flex-direction: column;
+  }
+  #productType {
+    margin-top: 25px;
+  }
+  &__type {
+    margin-top: 25px;
+  }
+  &__descr{
+    color: blue;
+    margin-top: 10px;
+    margin-left: 15px;
+  }
 }

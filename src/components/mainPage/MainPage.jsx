@@ -62,7 +62,7 @@ const MainPage = () => {
           <h2>Product List</h2>
           <div className="header__buttons">
             <Link to="/add-product" className='header__button'>ADD</Link>
-            <button onClick={deleteUsers} className='header__button'>MASS DELETE</button>
+            <button id='delete-product-btn' onClick={deleteUsers} className='header__button'>MASS DELETE</button>
             
           </div>
         </div>

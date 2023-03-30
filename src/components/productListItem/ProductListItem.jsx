@@ -13,9 +13,9 @@ const ProductListItem = (props) => {
           <p>{sku}</p>
           <p>{name}</p>
           <p>{price} $</p>
-          <p className={size === null ? "hidden" : ""}>Size: {size}</p>
+          <p className={size === null ? "hidden" : ""}>Size: {size} MB</p>
           <p className={height === null ? "hidden" : ""}>Dimensions: {height}x{width}x{length}</p>
-          <p className={weight === null ? "hidden" : ""}>Weight: {weight}</p>
+          <p className={weight === null ? "hidden" : ""}>Weight: {weight} Kg</p>
         </div>
     </div>
   );
