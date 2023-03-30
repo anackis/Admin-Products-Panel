@@ -6,7 +6,7 @@ const PageFooter = () => {
   return (
     <div className="footer">
       <div className="footer__divider"></div>
-      <h3>Scandiweb Test assigment</h3>
+      <h2>Scandiweb Test assigment</h2>
     </div>
   );
 };

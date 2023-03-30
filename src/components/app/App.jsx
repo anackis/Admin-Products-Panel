@@ -14,7 +14,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<MainPage/>}></Route>
-            <Route path="/addproducts" element={<AddProduct/>}></Route>
+            <Route path="/add-product" element={<AddProduct/>}></Route>
           </Routes>
         </main>
       </div>
