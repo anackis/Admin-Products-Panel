@@ -50,6 +50,10 @@
     display: flex;
     flex-direction: column;
   }
+  &__input {
+    display: flex;
+    align-items: center;
+  }
   #productType {
     margin-top: 25px;
   }
@@ -61,4 +65,9 @@
     margin-top: 10px;
     margin-left: 15px;
   }
+}
+
+.error {
+  color: red;
+  margin-left: 20px;
 }
