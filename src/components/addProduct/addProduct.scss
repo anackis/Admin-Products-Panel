@@ -12,6 +12,7 @@
 }
 
 .product_form {
+  position: relative;
   margin-top: 50px;
   margin-left: 10px;
   input {
@@ -70,4 +71,11 @@
 .error {
   color: red;
   margin-left: 20px;
+  &_top {
+    position: absolute;
+    top: -38px;
+    left: -10px;
+    font-size: 24px;
+    font-weight: 600;
+  }
 }

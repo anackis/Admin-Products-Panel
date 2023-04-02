@@ -11,15 +11,13 @@ import './addProduct.scss';
 
 
 const AddProduct = () => {
-  const [inputs, setInputs] = useState();
+  const [inputs, setInputs] = useState({});
   const [select, setSelect] = useState();
   const [skuArray, setSkuArray] = useState();
+  const [skuError, setSkuError] = useState(false);
 
-  
-  
-  const [inputError, setInputError] = useState(['sku', 'name', 'price']);
 
-  const [error, setError] = useState(false);
+  const [subbmitError, setSubmitError] = useState(false);
 
   const [dirtyInput, setDirtyInput] = useState([]);
 
@@ -27,131 +25,66 @@ const AddProduct = () => {
     getUsers();
   }, []); 
 
-
-  // const UseValidation = (value, validations) => {
-  //   const [isEmpty, setIsEmpty] = useState(true);
-  //   // const [minLengthError, setMinLengthError] = useState(false);
-  
-  //   useEffect(() => {
-  //     for (const validation in validations) {
-  //       switch (validation) {
-  //         // case 'minLength': 
-  //         //   value.length < validations[validation] ? setMinLengthError(true) : setMinLengthError(false)
-  //         //   break;
-  //         case 'isEmpty':
-  //           value ? setIsEmpty(false) : setIsEmpty(true)
-  //           break;
-  //         default: 
-  //           console.log("ok");
-  //       }
-  //     }
-  //   }, [value])
-  
-  //   return {
-  //     isEmpty,
-  //     // minLengthError,
-  //   }
-  // }
-
   const getUsers = () => {
       axios.get('http://localhost/api/users/save').then(function(response) {
       setSkuArray(response.data);
-      // console.log(response.data);
     });
   }
-
- 
-
-  const blurHandle = (e) => {
-    setDirtyInput([...dirtyInput, e.target.name ]);
+  
+  const validate = (e) => {
     if (e.target.value === "") {
-      // setInputError(e.target.name);
-      // setInputError((prevState) => ([
-      //   ...prevState,
-      //   e.target.name
-      // ]));
-      setError(true);
+      setDirtyInput([...dirtyInput, e.target.name ]);
     } else {
-      setInputError((current) => current.filter((item) => {
+      setDirtyInput((current) => current.filter((item) => {
         return item !==  e.target.name
       }));
     }
-    // switch (e.target.name) {
-    //   case 'sku':
-    //     // console.log(e.target.name);
-    //     // e.target.value === "" ? console.log(`${e.target.name} : ${e.target.value} error`) : console.log("yes");
-    //     e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     console.log(inputError);
-    //     break;
-    //   case 'name': 
-    //   e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     break;
-    //   case 'price': 
-    //   e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     break; 
-    //   case 'productType': 
-    //   e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     break;  
-    //   case 'size': 
-    //   e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     break;   
-    //   case 'height': 
-    //   e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     break;  
-    //   case 'width': 
-    //   e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     break; 
-    //   case 'length': 
-    //   e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     break;        
-    //   case 'weight': 
-    //   e.target.value === "" ? setInputError(e.target.name) : setInputError("");
-    //     break;    
-    //   default: 
-    //     console.log("def");
-        
-    // }
-    
   }
   
+  const blurHandle = (e) => {
+    validate(e);
+    setSubmitError(false);
+    setSkuError(false);
+  }
   
   const handleChange = (e) => {
+    setSubmitError(false);
+    setSkuError(false);
     const name = e.target.name;
     const value = e.target.value;
-    // console.log(name, value);
-    console.log(e.target.value);
     setInputs(values => ({...values, [name]: value}));
-    // console.log(inputs);
   }
 
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (inputError.length !== 0) {
-      console.log("validation error");
-      setError(true);
-    } else if ( skuArray.find(e => e.sku === inputs.sku)) {
-      console.log("SKU already exists");
-      
+    // getUsers();
+    if (Object.keys(inputs).length < 3) {
+      setSubmitError(true);
+      return
+    } else if (skuArray.find(e => e.sku === inputs.sku) && inputs.sku) {
+      console.log(inputs)
+      setSkuError(true);
+      return
     } else {
-      axios.post('http://localhost/api/user/save', inputs).then(function(response){
-        console.log(response);
+      axios.post('http://localhost/api/user/save', inputs).then(function(response) {
+        console.log("SUCCESS");
         e.target.reset();
       });
     }
   }
 
+  console.log("render");
 
- 
-  
   return (
     <div className='product-add-section'>
       <div className="header">
         <div className="header__wrapper">
           <h2>Product Add</h2>
           <div className="header__buttons">
-            <button /* disabled={!formValid} */ type="submit" form="product_form" className='header__button'>Save</button>
+            <button  type="submit" form="product_form" className='header__button'>Save</button>
             <Link to="/" className='header__button'>Cancel</Link>
           </div>
         </div>
@@ -159,7 +92,9 @@ const AddProduct = () => {
       </div>
 
       <div className="container">
+      
         <form id='product_form' className='product_form' onSubmit={handleSubmit}>
+        {subbmitError ? <p className='error error_top'>Please fill all required fields !</p> : ""}
           <div className="product_form__wrapper">
             <div className="product_form__labels">
               <label htmlFor="sku">SKU</label>
@@ -169,15 +104,16 @@ const AddProduct = () => {
             <div className="product_form__inputs">
               <div className="product_form__input">
                 <input onBlur={e => blurHandle(e)} id='sku' name='sku' onChange={handleChange} type="text" placeholder="sku" />
-                {inputError.find(e => e === "sku") && error && dirtyInput.find(item => item === "sku") ? <p className='error'>Empty Sku</p> : ""}
+                {dirtyInput.find(item => item === "sku") || subbmitError ? <p className='error'>Required Field</p> : ""}
+                {skuError ? <p className='error'>Sku Alreadu Exists! </p> : ""}
               </div>
               <div className="product_form__input">
                 <input onBlur={e => blurHandle(e)} id='name' name='name' onChange={handleChange} type="text" placeholder="name" />
-                {inputError.find(e => e === "name") && error && dirtyInput.find(item => item === "name") ? <p className='error'>Empty name</p> : ""}
+                {dirtyInput.find(item => item === "name") || subbmitError ? <p className='error'>Required Field</p> : ""}
               </div>
               <div className="product_form__input">
                 <input onBlur={e => blurHandle(e)} id='price' name='price' onChange={handleChange} type="text" placeholder="price" />
-                {inputError.find(e => e === "price") && error && dirtyInput.find(item => item === "price") ? <p className='error'>Empty price</p> : ""}
+                {dirtyInput.find(item => item === "price") || subbmitError ? <p className='error'>Required Field</p> : ""}
               </div>
               
               
@@ -221,6 +157,8 @@ const AddProduct = () => {
             <input id='weight' name='weight' onChange={handleChange} type="text" placeholder="weight" />
             <div className="product_form__descr">Please, provide weight in Kg.</div>
           </div>
+
+          
 
         </form>
       </div>
