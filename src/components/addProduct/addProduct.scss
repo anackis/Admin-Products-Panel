@@ -70,12 +70,33 @@
 
 .error {
   color: red;
-  margin-left: 20px;
   &_top {
+    margin-left: 20px;
     position: absolute;
     top: -38px;
     left: -10px;
     font-size: 24px;
     font-weight: 600;
+  }
+}
+
+.error_select {
+  position: absolute;
+  left: 255px;
+  top: 205px;
+}
+
+.error__block {
+  position: relative;
+  .error_select {
+    position: absolute;
+    left: 320px;
+    top: -40px;
+  }
+  .error_furn {
+    width: 200px;
+    position: absolute;
+    left: 195px;
+    top: -42px;
   }
 }

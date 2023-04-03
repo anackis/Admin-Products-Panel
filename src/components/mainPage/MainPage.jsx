@@ -22,7 +22,6 @@ const MainPage = () => {
 
   function getUsers() {
     axios.get('http://localhost/api/users/save').then(function(response) {
-    // console.log(response.data);
     setProducts(response.data);
   });
   }
@@ -45,15 +44,6 @@ const MainPage = () => {
       })
     })
   }
-
-  // const deleteUsers = (id) => {
-  //   axios.delete(`http://localhost/api/user/${id}/delete`).then(function(response) {
-  //     console.log(response.data);
-  //     getUsers();
-  //   })
-  // }
-
-  console.log(products);
 
   return (
     <div className='main-page'>
