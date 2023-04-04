@@ -1,5 +1,4 @@
 
-
 import './productListItem.scss';
 
 const ProductListItem = (props) => {

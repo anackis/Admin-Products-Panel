@@ -5,16 +5,12 @@ import ProductListItem from '../productListItem/ProductListItem';
 import { Link } from 'react-router-dom';
 
 import PageFooter from '../pageFooter/PageFooter';
-
 import './mainPage.scss';
 
 
 const MainPage = () => {
-
-
   const [products, setProducts] = useState([]);
   const [checked, setChecked] = useState([]);
-
 
   useEffect(() => {
     getUsers();
@@ -53,7 +49,6 @@ const MainPage = () => {
           <div className="header__buttons">
             <Link to="/add-product" className='header__button'>ADD</Link>
             <button id='delete-product-btn' onClick={deleteUsers} className='header__button'>MASS DELETE</button>
-            
           </div>
         </div>
         <div className="header__divider"></div>

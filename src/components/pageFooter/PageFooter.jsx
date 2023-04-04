@@ -1,5 +1,4 @@
 
-
 import './pageFooter.scss';
 
 const PageFooter = () => {

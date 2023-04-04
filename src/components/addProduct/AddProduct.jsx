@@ -1,6 +1,4 @@
 
-
-
 import { useState, useEffect } from 'react';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
@@ -8,10 +6,6 @@ import { Link } from 'react-router-dom';
 
 import PageFooter from '../pageFooter/PageFooter';
 import './addProduct.scss';
-
-
-
-
 
 
 const AddProduct = () => {
@@ -25,7 +19,6 @@ const AddProduct = () => {
     const [isEmpty, setIsEmpty] = useState(true);
     const [skuError, setSkuError] = useState(false);
     const [typeError, setTypeError] = useState(false);
-    
     const [inputValid, setInputValid] = useState(false);
   
     useEffect(() => {
@@ -36,19 +29,11 @@ const AddProduct = () => {
               value ? setIsEmpty(false) : setIsEmpty(true);
             break;
           case 'skuError':
-            // console.log(validations[validation]);
-            // console.log(validations);
             validations[validation] && validations[validation].find(item => item.sku === value) && inputs.sku ? setSkuError(true) : setSkuError(false);
             break;
           case 'typeError':
-              // typeof value === validations[validation] ? setTypeError(true) : setTypeError(false);
-              // console.log(typeof value)
-              // console.log(typeof validations[validation])
-              // typeof value == validations[validation] ? console.log("type error") : console.log("not type error");
-                
-                const numberRegEx = /^\d+$/ ;
-                // console.log(numberRegEx.test(String(value).toLowerCase()));
-                numberRegEx.test(String(value).toLowerCase()) ? setTypeError(false) : setTypeError(true);;
+              const numberRegEx = /^\d+$/ ;
+              numberRegEx.test(String(value).toLowerCase()) ? setTypeError(false) : setTypeError(true);;
             break;
           default: 
             break;
@@ -74,6 +59,7 @@ const AddProduct = () => {
     }
   }
   
+
   const useInput = (initialValue, validations) => {
     const [value, setValue] = useState(initialValue)
     const [isDirty, setIsDirty] = useState(false);
@@ -101,6 +87,7 @@ const AddProduct = () => {
     }
   }
 
+
   const sku = useInput('', {isEmpty: true, skuError: skuArray});
   const name = useInput('', {isEmpty:  true});
   const price = useInput('', {isEmpty:   true, typeError: "number"});
@@ -121,7 +108,6 @@ const AddProduct = () => {
     });
   }
 
-
   const handleSubmit = (e) => {
     setSubmitTry(false);
     e.preventDefault();
@@ -130,7 +116,7 @@ const AddProduct = () => {
       return;
     } else {
       axios.post('http://localhost/api/user/save', inputs).then(function(response) {
-        // console.log("SUCCESS");
+        console.log("SUCCESS");
         e.target.reset();
         navigate('/')
       });
@@ -152,7 +138,6 @@ const AddProduct = () => {
       </div>
 
       <div className="container">
-      
         <form id='product_form' className='product_form' onSubmit={handleSubmit}>
         {(!sku.inputValid ||!name.inputValid || !price.inputValid || !productType.inputValid) && submitTry ? <p className='error error_top'>Please fill all required fields !</p> : ""}
           <div className="product_form__wrapper">
@@ -176,13 +161,9 @@ const AddProduct = () => {
                 {price.isDirty && price.isEmpty ? <p className='error'>Required Field</p> : ""}
                 {price.isDirty && price.typeError && !price.isEmpty ? <p className='error'>Wrong type</p> : ""}
               </div>
-              
-              
             </div>
           </div>
-          {/* productType */}
           <label htmlFor="productType">Type Switcher</label>
-          {/* <select value={select} onChange={e=>setSelect(e.target.value)} id='productType' name='productType' > */}
           {productType.isDirty && productType.isEmpty ? <p className='error error_select'>Required Field</p> : ""}
           <select onBlur={e => productType.onBlur(e)} onChange={e => productType.onChange(e)} value={productType.value} id='productType' name='productType' >
             <option></option>
@@ -194,7 +175,6 @@ const AddProduct = () => {
 
           <div className={productType.value === "dvd" ? "DVD product_form__type" : "DVD hidden"}>
             <label htmlFor="size">Size (MB)</label>
-            {/* <input id='size' name='size' type="text" placeholder="size"/> */}
             <input onBlur={e => size.onBlur(e)} onChange={e => size.onChange(e)} value={size.value} id='size' name='size' type="text" placeholder="size"/>
             <div className="error__block">
               {size.isDirty && size.isEmpty ? <p className='error error_select'>Required Field</p> : ""}
@@ -211,9 +191,6 @@ const AddProduct = () => {
                 <label htmlFor="length">Length (CM)</label>
               </div>
               <div className="product_form__inputs">
-                {/* <input id='height' name='height' type="text" placeholder="height" />
-                <input id='width' name='width' type="text" placeholder="width" />
-                <input id='length' name='length' type="text" placeholder="length" /> */}
                 <input onBlur={e => height.onBlur(e)} onChange={e => height.onChange(e)} value={height.value} id='height' name='height' type="text" placeholder="height" />
                 <div className="error__block">
                   {height.isDirty && height.isEmpty ? <p className='error error_furn'>Required Field</p> : ""}
@@ -236,7 +213,6 @@ const AddProduct = () => {
 
           <div className={productType.value === "book" ? "Book product_form__type" : "Book hidden"}>
             <label htmlFor="weight">Weight (KG)</label>
-            {/* <input id='weight' name='weight' type="text" placeholder="weight" /> */}
             <input onBlur={e => weight.onBlur(e)} onChange={e => weight.onChange(e)} value={weight.value} id='weight' name='weight' type="text" placeholder="weight" />
             <div className="error__block">
               {weight.isDirty && weight.isEmpty ? <p className='error error_select'>Required Field</p> : ""}
@@ -244,8 +220,6 @@ const AddProduct = () => {
             </div>
             <div className="product_form__descr">Please, provide weight in Kg.</div>
           </div>
-
-          
 
         </form>
       </div>
