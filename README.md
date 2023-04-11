@@ -1,5 +1,5 @@
 # Admin-Products-Panel
-Admin Products Panel (React, MySql, PHP, SCSS, React custom hook validation without libraries)
+Admin Products Panel (React, MySql, PHP, SCSS, React custom hook validation without libraries) Junior Web Dev applying test
 
 ![test7 alexanackis com_](https://user-images.githubusercontent.com/61510461/229878471-cbf4dd09-eeac-4338-b77d-194eca050535.png)
 
