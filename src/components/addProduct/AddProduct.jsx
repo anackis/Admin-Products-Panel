@@ -1,232 +1,416 @@
-
-import { useState, useEffect } from 'react';
-import {useNavigate} from 'react-router-dom';
-import axios from 'axios';
+import React, {Component} from "react";
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 import PageFooter from '../pageFooter/PageFooter';
-import './addProduct.scss';
+import '../addProduct/addProduct.scss'
 
 
-const AddProduct = () => {
-  const [inputs, setInputs] = useState({});
-  const [skuArray, setSkuArray] = useState();
-  const [submitTry, setSubmitTry] = useState(false);
-  const navigate = useNavigate();
-  
-
-  const useValidation = (value, validations) => {
-    const [isEmpty, setIsEmpty] = useState(true);
-    const [skuError, setSkuError] = useState(false);
-    const [typeError, setTypeError] = useState(false);
-    const [inputValid, setInputValid] = useState(false);
-  
-    useEffect(() => {
-      for (const validation in validations) {
-        switch (validation) {
-          
-          case 'isEmpty': 
-              value ? setIsEmpty(false) : setIsEmpty(true);
-            break;
-          case 'skuError':
-            validations[validation] && validations[validation].find(item => item.sku === value) && inputs.sku ? setSkuError(true) : setSkuError(false);
-            break;
-          case 'typeError':
-              const numberRegEx = /^\d+$/ ;
-              numberRegEx.test(String(value).toLowerCase()) ? setTypeError(false) : setTypeError(true);;
-            break;
-          default: 
-            break;
-        }
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value, validations]);
-  
-    useEffect(() => {
-      if (isEmpty  || skuError ||  typeError) {
-        setInputValid(false);
-      } else {
-        setInputValid(true);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isEmpty, skuError, typeError] );
-  
-    return {
-      isEmpty,
-      skuError,
-      typeError, 
-      inputValid
-    }
+class Product {
+  constructor(sku, name, price, errors, skuArray) {
+    this.productType = "Product"
+    this.sku = sku;
+    this.name = name;
+    this.price = price;
+    this.errors = errors;
+    this.skuArray = skuArray;
   }
   
+  validate() {
+    const errors = {};
+    const numberRegEx = /^\d+$/;
 
-  const useInput = (initialValue, validations) => {
-    const [value, setValue] = useState(initialValue)
-    const [isDirty, setIsDirty] = useState(false);
-    const valid = useValidation(value, validations)
-  
-    const onChange = (e) => {
-      setValue(e.target.value);
-      setSubmitTry(false);
-      
-      const name = e.target.name;
-      const value = e.target.value;
-      setInputs(values => ({...values, [name]: value}));
+    if (!this.sku) {
+      errors.sku = "Product SKU is required";
+    } 
+    else if (this.skuArray.find(item => item.sku === this.sku)) {
+      errors.sku = "Product SKU already exists";
     }
-  
-    const onBlur = (e) => {
-      setIsDirty(true);
+
+    if (!this.name) {
+      errors.name = "Product name is required";
     }
-  
-    return {
-      value, 
+
+    if (!this.price) {
+      errors.price = "Product price is required";
+    } else if (!numberRegEx.test(String(this.price).toLowerCase())) {
+      errors.price = "Wrong type price";
+    }
+
+    if (this.productType === "Product") {
+      errors.productType = "Product Type is required";
+    }
+
+    return errors;
+  }
+}
+
+
+class DVD extends Product {
+  constructor(sku, name, price, size, errors, skuArray) {
+    super(sku, name, price, errors, skuArray);
+    this.productType = "DVD"
+    this.size = size;
+  }
+
+  validate() {
+    const errors = super.validate();
+    const numberRegEx = /^\d+$/;
+
+    if (!this.size) {
+      errors.size = "DVD size is required";
+    } else if (!numberRegEx.test(String(this.size).toLowerCase())) {
+      errors.size = "Wrong type size";
+    }
+
+    return errors;
+  }
+}
+
+
+class Book extends Product {
+  constructor(sku, name, price, weight, errors, skuArray) {
+    super(sku, name, price, errors, skuArray);
+    this.productType = "Book"
+    this.weight = weight;
+  }
+
+  validate() {
+    const errors = super.validate();
+    const numberRegEx = /^\d+$/;
+
+    if (!this.weight) {
+      errors.weight = "Book weight is required";
+    } else if (!numberRegEx.test(String(this.weight).toLowerCase())) {
+      errors.weight = "Wrong type weight";
+    }
+
+    return errors;
+  }
+}
+
+
+class Furniture extends Product {
+  constructor(sku, name, price, height, width, length, errors, skuArray) {
+    super(sku, name, price, errors, skuArray);
+    this.productType = "Furniture"
+    this.height = height;
+    this.width = width;
+    this.length = length;
+  }
+
+  validate() {
+    const errors = super.validate();
+    const numberRegEx = /^\d+$/;
+
+    if (!this.height) {
+      errors.height = "Furniture height is required";
+    } else if (!numberRegEx.test(String(this.height).toLowerCase())) {
+      errors.height = "Wrong type height";
+    }
+    if (!this.width) {
+      errors.width = "Furniture width is required";
+    } else if (!numberRegEx.test(String(this.width).toLowerCase())) {
+      errors.width = "Wrong type width";
+    }
+    if (!this.length) {
+      errors.length = "Furniture length is required";
+    } else if (!numberRegEx.test(String(this.length).toLowerCase())) {
+      errors.length = "Wrong type length";
+    }
+
+    return errors;
+  }
+}
+
+
+class InputField extends Component {
+  render()  {
+    const {
+      name,
+      label,
+      value,
+      error,
       onChange,
       onBlur,
-      isDirty,
-      ...valid
-    }
-  }
+      placeholder,
+    } = this.props
 
-
-  const sku = useInput('', {isEmpty: true, skuError: skuArray});
-  const name = useInput('', {isEmpty:  true});
-  const price = useInput('', {isEmpty:   true, typeError: "number"});
-  const productType = useInput('', {isEmpty:  true});
-  const size = useInput('', {isEmpty:  true, typeError: "number"});
-  const weight = useInput('', {isEmpty:  true, typeError: "number"});
-  const height = useInput('', {isEmpty:  true, typeError: "number"});
-  const width = useInput('', {isEmpty:  true, typeError: "number"});
-  const length = useInput('', {isEmpty:  true, typeError: "number"});
-
-  useEffect(() => {
-    getUsers();
-  }, [sku.skuError]); 
-
-  const getUsers = () => {
-      axios.get('http://localhost/api/users/save').then(function(response) {
-      setSkuArray(response.data);
-    });
-  }
-
-  const handleSubmit = (e) => {
-    setSubmitTry(false);
-    e.preventDefault();
-    if (!sku.inputValid || !name.inputValid || !price.inputValid || !productType.inputValid) {
-      setSubmitTry(true);
-      return;
-    } else {
-      axios.post('http://localhost/api/user/save', inputs).then(function(response) {
-        console.log("SUCCESS");
-        e.target.reset();
-        navigate('/')
-      });
-    }
-  }
-  
-
-  return (
-    <div className='product-add-section'>
-      <div className="header">
-        <div className="header__wrapper">
-          <h2>Product Add</h2>
-          <div className="header__buttons">
-            <button type="submit" form="product_form" className='header__button'>Save</button>
-            <Link to="/" className='header__button'>Cancel</Link>
+    return (
+      <div className="product_form__wrapper">
+        <div className="product_form__labels">
+          <label htmlFor={name}>{label}</label>
+        </div>
+        <div className="product_form__inputs">
+          <div className="product_form__input">
+            <input
+              onChange={onChange}
+              onBlur={onBlur}
+              value={value}
+              id={name}
+              name={name}
+              type="text"
+              placeholder={placeholder}
+            />
+            {error && <p className="error">{error}</p>}
           </div>
         </div>
-        <div className="header__divider"></div>
       </div>
+    )
+  }
+}
 
-      <div className="container">
-        <form id='product_form' className='product_form' onSubmit={handleSubmit}>
-        {(!sku.inputValid ||!name.inputValid || !price.inputValid || !productType.inputValid) && submitTry ? <p className='error error_top'>Please fill all required fields !</p> : ""}
-          <div className="product_form__wrapper">
-            <div className="product_form__labels">
-              <label htmlFor="sku">SKU</label>
-              <label htmlFor="name">Name</label>
-              <label htmlFor="price">Price ($)</label>
-            </div>
-            <div className="product_form__inputs">
-              <div className="product_form__input">
-                <input onBlur={e => sku.onBlur(e)} onChange={e => sku.onChange(e)} value={sku.value} id='sku' name='sku'  type="text" placeholder="sku" />
-                {sku.isDirty && sku.isEmpty ? <p className='error'>Required Field</p> : ""}
-                {sku.isDirty && sku.skuError ? <p className='error'>Sku already exists</p> : ""}
-              </div>
-              <div className="product_form__input">
-                <input onBlur={e => name.onBlur(e)} onChange={e => name.onChange(e)} value={name.value} id='name' name='name' type="text" placeholder="name" />
-                {name.isDirty && name.isEmpty ? <p className='error'>Required Field</p> : ""}
-              </div>
-              <div className="product_form__input">
-                <input onBlur={e => price.onBlur(e)} onChange={e => price.onChange(e)} value={price.value} id='price' name='price' placeholder="price" />
-                {price.isDirty && price.isEmpty ? <p className='error'>Required Field</p> : ""}
-                {price.isDirty && price.typeError && !price.isEmpty ? <p className='error'>Wrong type</p> : ""}
-              </div>
+
+class ProductForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      productType: "Product",
+      sku: "",
+      name: "",
+      price: "",
+      size: "",
+      weight: "",
+      height: "",
+      width: "",
+      length: "",
+      skuArray: [],
+      errors: {},
+    };    
+  }
+
+  componentDidMount() {
+    axios.get("http://localhost/api/users/save").then((response) =>
+    this.setState({ skuArray: [...response.data] })
+    );
+  }
+
+
+  handleSubmit = event => {
+    event.preventDefault(); 
+    const { sku, name, price, productType, size, weight, height, width, length, skuArray } = this.state;
+    let product;
+
+    switch (productType) {
+      case "DVD":
+        product = new DVD(sku, name, price, size, skuArray, skuArray);
+        break;
+      case "Book":
+        product = new Book(sku, name, price, weight, skuArray, skuArray);
+        break;
+      case "Furniture":
+        product = new Furniture(sku, name, price, height, width, length, skuArray, skuArray);
+        break;
+      default:
+        product = new Product(sku, name, price, skuArray, skuArray);
+    }
+
+    const errors = product.validate();
+
+    if (Object.keys(errors).length !== 0) {
+      this.setState({ errors: errors });
+      return;
+    } else {
+      axios.post("http://localhost/api/user/save", product).then(function(response) {
+        window.location.replace('/');
+      });
+    }
+  };
+
+
+  handleInputChange = (event) => {
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
+  };
+
+
+  handleChange = (event) => {
+    const { name, value } = event.target;
+    this.setState((prevState) => ({
+      ...prevState,
+      [name]: value,
+      errors: {
+        ...prevState.errors,
+        [name]: null,
+      },
+    }));
+  };
+
+
+  render() {
+    const {
+      sku,
+      name,
+      price,
+      productType,
+      size,
+      weight,
+      height,
+      width,
+      length,
+      errors
+    } = this.state;
+    
+    
+    return (
+      <div className="product-add-section">
+        <div className="header">
+          <div className="header__wrapper">
+            <h2>Product Add</h2>
+            <div className="header__buttons">
+              <button
+                onSubmit={this.handleSubmit}
+                type="submit"
+                form="product_form"
+                className="header__button"
+              >
+                Save
+              </button>
+              <Link to="/" className="header__button">
+                Cancel
+              </Link>
             </div>
           </div>
-          <label htmlFor="productType">Type Switcher</label>
-          {productType.isDirty && productType.isEmpty ? <p className='error error_select'>Required Field</p> : ""}
-          <select onBlur={e => productType.onBlur(e)} onChange={e => productType.onChange(e)} value={productType.value} id='productType' name='productType' >
-            <option></option>
-            <option id='DVD' value="dvd">DVD</option>
-            <option id='Furniture' value="book">Book</option>
-            <option id='Book' value="furniture">Furniture</option>
-          </select>
-          
+          <div className="header__divider"></div>
+        </div>
 
-          <div className={productType.value === "dvd" ? "DVD product_form__type" : "DVD hidden"}>
-            <label htmlFor="size">Size (MB)</label>
-            <input onBlur={e => size.onBlur(e)} onChange={e => size.onChange(e)} value={size.value} id='size' name='size' type="text" placeholder="size"/>
-            <div className="error__block">
-              {size.isDirty && size.isEmpty ? <p className='error error_select'>Required Field</p> : ""}
-              {size.isDirty && size.typeError && !size.isEmpty ? <p className='error error_select'>Wrong type</p> : ""}
+        <div className="container">
+          <form id="product_form" className="product_form" onSubmit={this.handleSubmit}>
+            <InputField
+              name="sku"
+              label="SKU"
+              value={sku}
+              error={errors.sku}
+              onChange={this.handleInputChange}
+              onBlur={this.handleBlur}
+              placeholder="sku"
+            />
+
+            <InputField
+              name="name"
+              label="Name"
+              value={name}
+              error={errors.name}
+              onChange={this.handleInputChange}
+              onBlur={this.handleBlur}
+              placeholder="name"
+            />
+
+            <InputField
+              name="price"
+              label="Price ($)"
+              value={price}
+              error={errors.price}
+              onChange={this.handleInputChange}
+              onBlur={this.handleBlur}
+              placeholder="price"
+            />
+
+            <div>
+              <label>
+                Product type:
+                <select
+                  value={productType}
+                  onChange={this.handleChange}
+                  id="productType"
+                  name="productType"
+                >
+                  <option value=""></option>
+                  <option value="DVD">DVD</option>
+                  <option value="Book">Book</option>
+                  <option value="Furniture">Furniture</option>
+                </select>
+              </label>
+              {errors.productType && (
+                <p className="error error_select">{errors.productType}</p>
+              )}
             </div>
-            <div className="product_form__descr">Please, provide DVD size in MB.</div>
-          </div>
 
-          <div className={productType.value === "furniture" ? "Furniture product_form__type" : "Furniture hidden"}>
-            <div className="product_form__wrapper">
-              <div className="product_form__labels">
-                <label htmlFor="height">Height (CM)</label>
-                <label htmlFor="width">Width (CM)</label>
-                <label htmlFor="length">Length (CM)</label>
-              </div>
-              <div className="product_form__inputs">
-                <input onBlur={e => height.onBlur(e)} onChange={e => height.onChange(e)} value={height.value} id='height' name='height' type="text" placeholder="height" />
-                <div className="error__block">
-                  {height.isDirty && height.isEmpty ? <p className='error error_furn'>Required Field</p> : ""}
-                  {height.isDirty && height.typeError && !height.isEmpty ? <p className='error error_furn'>Wrong type</p> : ""}
+            {productType === "DVD" && (
+              <div className="DVD product_form__type">
+                <div className="product_form__wrapper">
+                  <InputField
+                    name="size"
+                    label="Size:"
+                    value={size}
+                    error={errors.size}
+                    onChange={this.handleInputChange}
+                    onBlur={this.handleBlur}
+                    placeholder="size"
+                  />
                 </div>
-                <input onBlur={e => width.onBlur(e)} onChange={e => width.onChange(e)} value={width.value} id='width' name='width' type="text" placeholder="width" />
-                <div className="error__block">
-                  {width.isDirty && width.isEmpty ? <p className='error error_furn'>Required Field</p> : ""}
-                  {width.isDirty && width.typeError && !width.isEmpty ? <p className='error error_furn'>Wrong type</p> : ""}
-                </div>
-                <input onBlur={e => length.onBlur(e)} onChange={e => length.onChange(e)} value={length.value} id='length' name='length' type="text" placeholder="length" />
-                <div className="error__block">
-                  {length.isDirty && length.isEmpty ? <p className='error error_furn'>Required Field</p> : ""}
-                  {length.isDirty && length.typeError && !length.isEmpty ? <p className='error error_furn'>Wrong type</p> : ""}
+                <div className="product_form__descr">
+                  Please, provide DVD size in MB.
                 </div>
               </div>
-            </div>
-            <div className="product_form__descr">Please, provide ( height x width x length ) in CM.</div>
-          </div>
+            )}
 
-          <div className={productType.value === "book" ? "Book product_form__type" : "Book hidden"}>
-            <label htmlFor="weight">Weight (KG)</label>
-            <input onBlur={e => weight.onBlur(e)} onChange={e => weight.onChange(e)} value={weight.value} id='weight' name='weight' type="text" placeholder="weight" />
-            <div className="error__block">
-              {weight.isDirty && weight.isEmpty ? <p className='error error_select'>Required Field</p> : ""}
-              {weight.isDirty && weight.typeError && !weight.isEmpty ? <p className='error error_select'>Wrong type</p> : ""}
-            </div>
-            <div className="product_form__descr">Please, provide weight in Kg.</div>
-          </div>
+            {productType === "Book" && (
+              <div className="Book product_form__type">
+                <div className="product_form__wrapper">
+                  <InputField
+                    name="weight"
+                    label="Weight:"
+                    value={weight}
+                    error={errors.weight}
+                    onChange={this.handleInputChange}
+                    onBlur={this.handleBlur}
+                    placeholder="weight"
+                  />
+                </div>
+                <div className="product_form__descr">
+                  Please, provide weight in Kg.
+                </div>
+              </div>
+            )}
 
-        </form>
+            {productType === "Furniture" && (
+              <div className="Furniture product_form__type">
+                <div className="product_form__wrapper">
+                  <div className="product_form__labels">
+                  <label htmlFor="height">Height (CM)</label>
+                  <label htmlFor="width">Width (CM)</label>
+                  <label htmlFor="length">Length (CM)</label>
+                </div>
+                <div className="product_form__inputs">
+                <InputField
+                  name="height"
+                  value={height}
+                  error={errors.height}
+                  onChange={this.handleInputChange}
+                  onBlur={this.handleBlur}
+                  placeholder="height"
+                />
+                <InputField
+                  name="width"
+                  value={width}
+                  error={errors.width}
+                  onChange={this.handleInputChange}
+                  onBlur={this.handleBlur}
+                  placeholder="width"
+                />
+                <InputField
+                  name="length"
+                  value={length}
+                  error={errors.length}
+                  onChange={this.handleInputChange}
+                  onBlur={this.handleBlur}
+                  placeholder="length"
+                />
+              </div>
+              </div>
+                <div className="product_form__descr">
+                Please, provide ( height x width x length ) in CM.
+                </div>
+              </div>
+            )}
+          </form>
+        </div>
+        <PageFooter />
       </div>
+    );
+  }
+}
 
-      <PageFooter/>
-    </div>
-  );
-};
 
-export default AddProduct;
+export default ProductForm;
